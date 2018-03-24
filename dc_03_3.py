@@ -11,7 +11,7 @@ while True:
 	packet = s1.recvfrom(4096)
 
 	ethernet_header = struct.unpack('!6s6s2s', packet[0][0:14])
-	
+	ip_header = struct.unpack('!BBHHHBBH4s4s',packet[14:34])
 	
 	print("=============================================")
 	print("		Ethernet II			")
@@ -29,14 +29,6 @@ while True:
 	print("Source MAC address : ",slicing_src[0]+":"+slicing_src[1]+":"+slicing_src[2]+":"+slicing_src[3]+":"+slicing_src[4]+":"+slicing_src[5])
 	print("protocol : ",protocol_type)
 	print("---------------------------------------------")
-	break
-
-while True:
-	packet = s2.recvfrom(65565)
-	packet = packet[0]
-	ip_header = struct.unpack('!BBHHHBBH4s4s',packet[0:20])
-#(b'E\x00\x00(!\xf7@\x00v\x06\xc1Lv\xd9\x869\xa8\xbc{\xbd/P\x00\x16@\x9f\x9f\xc3\x84\xe0\x98\x15P\x10\x00\xff`\x8a\x00\x00', ('118.217.134.57', 0))
-
 	print("=============================================")
 	print("         IPv4                     ")
 	print("=============================================")
@@ -57,9 +49,9 @@ while True:
 	#Identification
 	identification = ip_header[3]
 	#Flags
-	flags = ip_header[4] >> 13
+	flags = ip_header[4]
 	#Fragment offset
-	fragment_offset = (ip_header[4] & 0x1FFF) << 2
+	#fragment_offset = ip_header[4]
 
 	#TTL
 	ttl = ip_header[5]	
@@ -80,12 +72,15 @@ while True:
 	print("Total length : ",str(total_length))
 	print("Identification :",str(identification))
 	print("Flags : ",flags)
-	print("Fragment offset : ",fragment_offset)
+	print("Fragment offset : ")
 	print("TTL : ",str(ttl))		
 	print("Protocol : ",str(protocol))
 	print("Header Checksum : ",hchecksum)
 	print("Source IP address :",source_address)
 	print("Destination IP address : ",destination_address)
 
-	
 	break
+
+
+
+
