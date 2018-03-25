@@ -2,8 +2,8 @@
 import socket
 import struct
 
-s1 = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0003))
-s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
+s1 = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
+#s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
 
 slicing_dst = []
 slicing_src = []
@@ -29,14 +29,10 @@ while True:
 	print("Source MAC address : ",slicing_src[0]+":"+slicing_src[1]+":"+slicing_src[2]+":"+slicing_src[3]+":"+slicing_src[4]+":"+slicing_src[5])
 	print("protocol : ",protocol_type)
 	print("---------------------------------------------")
-	break
 
-while True:
-	packet = s2.recvfrom(65565)
-	packet = packet[0]
-	ip_header = struct.unpack('!BBHHHBBH4s4s',packet[0:20])
-#(b'E\x00\x00(!\xf7@\x00v\x06\xc1Lv\xd9\x869\xa8\xbc{\xbd/P\x00\x16@\x9f\x9f\xc3\x84\xe0\x98\x15P\x10\x00\xff`\x8a\x00\x00', ('118.217.134.57', 0))
-
+	packet1 = s1.recvfrom(65565)
+	packet1 = packet[0]
+	ip_header = struct.unpack('!BBHHHBBH4s4s',packet1[14:34])
 	print("=============================================")
 	print("         IPv4                     ")
 	print("=============================================")
@@ -59,7 +55,7 @@ while True:
 	#Flags
 	flags = ip_header[4] >> 13
 	#Fragment offset
-	fragment_offset = (ip_header[4] & 0x1FFF) << 2
+	fragment_offset = (ip_header[4]&0x1FFFF) << 2
 
 	#TTL
 	ttl = ip_header[5]	
@@ -74,18 +70,18 @@ while True:
 	
 	#destination ip address
 	destination_address = socket.inet_ntoa(ip_header[9])
-	print("Version : ",str(version))
+	print("Version : ",version)
 	print("Internet Header Length : ",ip_header_length)
 	print("TOS :",tos)
-	print("Total length : ",str(total_length))
-	print("Identification :",str(identification))
+	print("Total length : ",total_length)
+	print("Identification :",identification)
 	print("Flags : ",flags)
 	print("Fragment offset : ",fragment_offset)
-	print("TTL : ",str(ttl))		
-	print("Protocol : ",str(protocol))
+	print("TTL : ",ttl)		
+	print("Protocol : ",protocol)
 	print("Header Checksum : ",hchecksum)
 	print("Source IP address :",source_address)
 	print("Destination IP address : ",destination_address)
-
+	
 	
 	break
