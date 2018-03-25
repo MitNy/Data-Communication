@@ -3,15 +3,13 @@ import socket
 import struct
 
 s1 = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
-#s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
 
 slicing_dst = []
 slicing_src = []
 while True:
-	packet = s1.recvfrom(4096)
+	packet = s1.recvfrom(65565)
 
-	ethernet_header = struct.unpack('!6s6s2s', packet[0][0:14])
-	
+	ethernet_header = struct.unpack('!6s6s2s', packet[0][0:14])	
 	
 	print("=============================================")
 	print("		Ethernet II			")
@@ -25,6 +23,7 @@ while True:
 		slicing_dst.append(dst_ethernet_addr[(2*i):(2*i)+2])
 		slicing_src.append(src_ethernet_addr[(2*i):(2*i)+2])
 
+	#print ethernet header info
 	print("Destination MAC address : ",slicing_dst[0]+":"+slicing_dst[1]+":"+slicing_dst[2]+":"+slicing_dst[3]+":"+slicing_dst[4]+":"+slicing_dst[5])
 	print("Source MAC address : ",slicing_src[0]+":"+slicing_src[1]+":"+slicing_src[2]+":"+slicing_src[3]+":"+slicing_src[4]+":"+slicing_src[5])
 	print("protocol : ",protocol_type)
@@ -46,17 +45,14 @@ while True:
 
 	#TOS
 	tos = ip_header[1]
-
 	#total length
 	total_length = ip_header[2]
-
 	#Identification
 	identification = ip_header[3]
 	#Flags
 	flags = ip_header[4] >> 13
 	#Fragment offset
 	fragment_offset = (ip_header[4]&0x1FFFF) << 2
-
 	#TTL
 	ttl = ip_header[5]	
 	#protocol
@@ -70,6 +66,8 @@ while True:
 	
 	#destination ip address
 	destination_address = socket.inet_ntoa(ip_header[9])
+	
+	#print ip header info
 	print("Version : ",version)
 	print("Internet Header Length : ",ip_header_length)
 	print("TOS :",tos)
