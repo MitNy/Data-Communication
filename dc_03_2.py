@@ -29,9 +29,8 @@ while True:
 	print("protocol : ",protocol_type)
 	print("---------------------------------------------")
 
-	packet1 = s1.recvfrom(65565)
-	packet1 = packet[0]
-	ip_header = struct.unpack('!BBHHHBBH4s4s',packet1[14:34])
+	packet = packet[0]
+	ip_header = struct.unpack('!BBHHHBBH4s4s',packet[14:34])
 	print("=============================================")
 	print("         IPv4                     ")
 	print("=============================================")
