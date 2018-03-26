@@ -37,7 +37,7 @@ while True:
 	version = ip_header[0] >> 4
 
 	#ip header length
-	ip_header_length = (ip_header[0] & 0xF) * 4
+	ip_header_length = (ip_header[0] & 0xF) << 2
 	#TOS
 	tos = ip_header[1]
 	#total length
