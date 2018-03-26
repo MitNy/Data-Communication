@@ -32,12 +32,12 @@ while True:
 	print("         IPv4                     ")
 	print("=============================================")
 
+	print(ip_header)
 	# ip version
-	ip_version = ip_header[0]
-	version = ip_version >> 4
+	version = ip_header[0] >> 4
+
 	#ip header length
-	ip_length = ip_version & 0xF
-	ip_header_length = ip_length * 4
+	ip_header_length = (ip_header[0] & 0xF) * 4
 	#TOS
 	tos = ip_header[1]
 	#total length
