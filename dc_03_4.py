@@ -3,13 +3,13 @@ import socket
 import struct
 
 s1 = socket.socket(socket.AF_PACKET,socket.SOCK_RAW, socket.htons(0x0800))
-#s2 = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_TCP)
 
 slicing_dst = []
 slicing_src = []
 while True:
 	packet = s1.recvfrom(65565)
-	ethernet_header = struct.unpack('!6s6s2s', packet[0][0:14])
+	packet = packet[0]
+	ethernet_header = struct.unpack('!6s6s2s', packet[0:14])
 		
 	print("=============================================")
 	print("		Ethernet II			")
@@ -27,15 +27,14 @@ while True:
 	print("protocol : ",protocol_type)
 	print("---------------------------------------------")
 
-	packet = packet[0]
 	ip_header = struct.unpack('!BBHHHBBH4s4s',packet[14:34])
 	print("=============================================")
 	print("         IPv4                     ")
 	print("=============================================")
+
 	# ip version
 	ip_version = ip_header[0]
 	version = ip_version >> 4
-
 	#ip header length
 	ip_length = ip_version & 0xF
 	ip_header_length = ip_length * 4
@@ -58,8 +57,8 @@ while True:
 	#source ip address
 	source_address = socket.inet_ntoa(ip_header[8])
 	#destination ip address
-
 	destination_address = socket.inet_ntoa(ip_header[9])
+	
 	print("Version : ",version)
 	print("Internet Header Length : ",ip_header_length)
 	print("TOS :",tos)
