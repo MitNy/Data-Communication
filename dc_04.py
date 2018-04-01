@@ -93,25 +93,25 @@ while True:
 		# Data offset 4 bits
 		print("Data offset : ",tcp_header[4] >> 4 )
 		# Reserved 3 bits
-		print("Reserved : ",(tcp_header[4] & 0xF) << 2 )
+		print("Reserved : ",tcp_header[4] & 0xF>> 4 )
 		# NS 1 bits
-		print("NS : ")
+		print("NS : ",(tcp_header[4]) & 0x01)
 		# CWR  tcp_header[5] 1 bits
-		print("CWR : ")
+		print("CWR : ",(tcp_header[5] & 0x80) >> 7)
 		# ECE 1 bits
-		print("ECE : ")
+		print("ECE : ",(tcp_header[5] & 0x40) >> 6)
 		# URG 1 bits
-		print("URG : ")
+		print("URG : ",(tcp_header[5]&0x20) >> 5)
 		# ACK 1 bits
-		print("ACK : ")
+		print("ACK : ",(tcp_header[5] & 0x10) >> 4)
 		# PSH 1 bits
-		print("PSH : ")
+		print("PSH : ",(tcp_header[5] & 0x08) >> 3)
 		# RST 1 bits
-		print("RST : ")
+		print("RST : ",(tcp_header[5] & 0x04) >> 2)
 		# SYN 1 bits
-		print("SYN : ")
+		print("SYN : ",(tcp_header[5] & 0x02) >> 1)
 		# FIN 1 bits
-		print("FIN : ")
+		print("FIN : ",tcp_header[5] & 0x01)
 		# Window Size 32 bits
 		print("Window Size : ",tcp_header[6])
 		# TCP Chcksum 32 bits
