@@ -93,7 +93,7 @@ while True:
 		# Data offset 4 bits
 		print("Data offset : ",tcp_header[4] >> 4 )
 		# Reserved 3 bits
-		print("Reserved : ",tcp_header[4] & 0xF>> 4 )
+		print("Reserved : ",(tcp_header[4] & 0xF) >> 4 )
 		# NS 1 bits
 		print("NS : ",(tcp_header[4]) & 0x01)
 		# CWR  tcp_header[5] 1 bits
@@ -101,7 +101,7 @@ while True:
 		# ECE 1 bits
 		print("ECE : ",(tcp_header[5] & 0x40) >> 6)
 		# URG 1 bits
-		print("URG : ",(tcp_header[5]&0x20) >> 5)
+		print("URG : ",(tcp_header[5] & 0x20) >> 5)
 		# ACK 1 bits
 		print("ACK : ",(tcp_header[5] & 0x10) >> 4)
 		# PSH 1 bits
