@@ -1,5 +1,6 @@
 import socket
 import struct
+import os
 
 ip_address = "127.0.0.1"
 port_number = 2345
@@ -15,21 +16,26 @@ while True:
 	client_sock, addr = server_sock.accept()
 	print("[+] Client connected: ", addr)
 
+	file_size = 0
+	data_size =0
 	while True:
 		data = client_sock.recv(1040)
 		value = 0
 		encode_value = value.to_bytes(1,byteorder="big")
-
 		if data[:1] == encode_value :
 			file_name = data[1:11].decode()
 			f = open("./photo/new_"+file_name.rstrip()+"","wb")
-
+			file_size = os.path.getsize("./"+file_name.rstrip()+"")
 		if not data:
 			break
 		if data[:1] == encode_value :
 			f.write(data[16:1040].rstrip())
 		else :
 			f.write(data[16:1040])
+			data_size += len(data[16:1040])
+
+		print(data_size,"/",file_size," , ","{0:.2f}".format((data_size/float(file_size))*100),"%")
+
 	f.close()
 	print("[+] Download complete!")
 	client_sock.close()
