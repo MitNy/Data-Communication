@@ -9,7 +9,7 @@ server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_sock.bind((ip_address, port_number))
 
 while True:
-	print("--------------------------")
+	print("-----------------------------------")
 	print("Listening ...")
 	server_sock.listen()
 
@@ -24,8 +24,14 @@ while True:
 		encode_value = value.to_bytes(1,byteorder="big")
 		if data[:1] == encode_value :
 			file_name = data[1:11].decode()
+			path = "./photo/new_"+file_name.rstrip()+""
 			f = open("./photo/new_"+file_name.rstrip()+"","wb")
 			file_size = os.path.getsize("./"+file_name.rstrip()+"")
+			print("File Name  = ",file_name)
+			print("File Size = ",file_size)
+			print("File Path = ",path)
+			print("-----------------------------------")
+
 		if not data:
 			break
 		if data[:1] == encode_value :
@@ -37,6 +43,6 @@ while True:
 		print(data_size,"/",file_size," , ","{0:.2f}".format((data_size/float(file_size))*100),"%")
 
 	f.close()
-	print("[+] Download complete!")
 	client_sock.close()
+	print("[+] File Receive End...")
 	print("[-] Client disconnected")

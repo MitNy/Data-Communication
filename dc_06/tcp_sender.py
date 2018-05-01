@@ -8,6 +8,9 @@ while True:
 	client_sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 	client_sock.connect((serverIP,serverPort))
 	print("[+] Connected with Server")
+	print("Receiver IP = ",serverIP)
+	print("Receiver Port = ",str(serverPort))
+
 	f_send = input("Input file name : ")
 	with open(f_send, "rb") as f:
 		file_size = os.path.getsize("./"+f_send+"")
@@ -32,4 +35,6 @@ while True:
 		f.close()
 
 	client_sock.close()
+	print("[+] File Send End...")
 	print("[-] Disconnected")
+	print("-----------------------------------")
