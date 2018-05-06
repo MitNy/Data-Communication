@@ -20,7 +20,7 @@ def sha1generator(seqNumber,fileData):
 
 
 while True:
-	buffer = []
+	buff = []
 	sender_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 	print("[+] Connected with Receiver")
 	print("Receiver IP = ",receiverIP)
@@ -35,8 +35,15 @@ while True:
 		file_size = os.path.getsize("./"+input_file+"")
 		print("[+] Sending file...")
 		data = f.read(1024)
-		sender_sock.sendto(data,(receiverIP,receiverPort))
-		checksum = sha1generator(sequence_number,data)
+		while(data):
+			if not data:
+				break
+			if sequence_number == 0 :
+				encode_seqNumber = sequence_number.to_bytes(1,byteorder="big")
+				checksum = sha1generator(sequence_number,data)
+				buff = padding_name.encode()+checksum+encode_seqNumber+data 
+				sender_sock.sendto(padding_name.encode()+checksum+encode_seqNumber+data,(receiverIP,receiverPort))
+				print("receive : ",sender_sock.recv(10))			
 
 		f.close()
 	print("Send Message to Server...")

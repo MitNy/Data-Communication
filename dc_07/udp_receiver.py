@@ -11,15 +11,24 @@ port_number = 2345
 receiver_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 receiver_sock.bind((ip_address,port_number))
 while True:
+	buff = []
 	print("------------------------------------------------------")
 	print("Receiver socket open...")
 	print("Listening...")
-
 	data_size = 0
-	data,addr = receiver_sock.recvfrom(1060)
 
-	f = open("./new_file.png","wb")
-	f.write(data)
+	while True:
+		data,addr = receiver_sock.recvfrom(1060)
+		file_name = data[0:15].rstrip()
+		print(file_name)
+		f = open("./new_file.png","wb")
+		if not data:
+			ACK = 0
+			encode_ack = ACK.to_bytes(1,byteorder="big")
+			#receiver_sock.sendto(encode_ack,addr)
+		else :
+			ACK = 1
+			encode_ack = ACK.to_bytes(1,byteorder="big")
+			#receiver_sock.sendto(encode_ack,addr)
+			f.write(data)
 	f.close()
-	
-	receiver_sock.sendto(data,addr)
