@@ -7,14 +7,21 @@ import sys
 # sequence number : 프레임 순서 보장, 0-1
 # checksum : 프레임 무결성 보장, sequence number+file data sha1 encode
 
-serverIP = '127.0.0.1'
-serverPort = 2345
+receiverIP = '127.0.0.1'
+receiverPort = 2345
 
 while True:
-	client_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-	input_file = input("Input file : ")
-	client_sock.sendto(input_file.encode(),(serverIP,serverPort))
-	print("Send Message to Server...")
-	print("Received Message from Server : "+((client_sock.recv(1024)).decode()))
+	sender_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 	print("------------------------------------------------------")
-	client_sock.close()
+	print("[+] Connected with Receiver")
+	print("Receiver IP = ",receiverIP)
+	print("Receiver Port = ",receiverPort)
+	print("------------------------------------------------------")
+	input_file = input("Input file : ")
+	padding_name = input_file.ljust(15,)
+		
+	sender_sock.sendto(input_file.encode(),(receiverIP,receiverPort))
+	print("Send Message to Server...")
+	print("Received Message from Server : "+((sender_sock.recv(1024)).decode()))
+	print("------------------------------------------------------")
+	sender_sock.close()

@@ -8,15 +8,15 @@ import os
 ip_address = '127.0.0.1'
 port_number = 2345
 
-server_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-server_sock.bind((ip_address,port_number))
+receiver_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+receiver_sock.bind((ip_address,port_number))
 while True:
 	print("------------------------------------------------------")
-	print("Server socket open...")
+	print("Receiver socket open...")
 	print("Listening...")
-	data,addr = server_sock.recvfrom(4000)
+	data,addr = receiver_sock.recvfrom(4000)
 
 	de_msg = data.decode()
-	print("Received Message from client : "+de_msg)
+	print("Received Message from sender : "+de_msg)
 	
-	server_sock.sendto(de_msg.encode(),addr)
+	receiver_sock.sendto(de_msg.encode(),addr)
