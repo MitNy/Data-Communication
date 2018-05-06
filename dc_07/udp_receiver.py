@@ -14,9 +14,12 @@ while True:
 	print("------------------------------------------------------")
 	print("Receiver socket open...")
 	print("Listening...")
-	data,addr = receiver_sock.recvfrom(4000)
 
-	de_msg = data.decode()
-	print("Received Message from sender : "+de_msg)
+	data_size = 0
+	data,addr = receiver_sock.recvfrom(1060)
+
+	f = open("./new_file.png","wb")
+	f.write(data)
+	f.close()
 	
-	receiver_sock.sendto(de_msg.encode(),addr)
+	receiver_sock.sendto(data,addr)
