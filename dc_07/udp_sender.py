@@ -30,11 +30,8 @@ while True:
 	print("-----------------------------------")
 	input_file = input("Input file : ")
 	padding_name = input_file.ljust(11,)
-
 	
-
 	with open(input_file,"rb") as f:
-		f.seek(0)
 		file_size = os.path.getsize("./"+input_file+"")
 		kb_size = file_size/1024
 		padding_size = str(int(kb_size)).rjust(4,);
@@ -46,20 +43,19 @@ while True:
 		info_checksum = sha1generator(sequence_number,"".encode().ljust(1024,))
 		encode_seqNumber = sequence_number.to_bytes(1,byteorder="big")
 		
-		print(info_checksum)
 		sender_sock.sendto((padding_name.encode()+padding_size.encode()+info_checksum+encode_seqNumber).ljust(1060,),(receiverIP,receiverPort))
 
-		ACK = struct.unpack("!i",sender_sock.recv(4))[0]
-		print(ACK)
+		ACK = struct.unpack("!1i",sender_sock.recv(4))[0]
 		sequence_number = ACK
 		if ACK == 1:
 			data = f.read(1024)
-			while (data):
+			while data:
 				data_size += len(data)
 				sequence_number = data[36]
 				encode_number = sequence_number.to_bytes(1,byteorder="big")
 				checksum = sha1generator(sequence_number,data)
 				sender_sock.sendto(padding_name.encode()+padding_size.encode()+checksum+encode_number+data,(receiverIP,receiverPort))
+				
 				data = f.read(1024)
 				print(data_size,"/",file_size," , ","{0:.2f}".format((data_size/float(file_size))*100),"%")
 				try:
@@ -67,7 +63,9 @@ while True:
 					ACK = sender_sock.recv(4)
 					sequence_number = struct.unpack("!1i",sender_sock.recv(4))[0]
 				except:
+					ACK = 0
 					continue
+
 				if data_size == file_size:
 					break								
 	f.close()
