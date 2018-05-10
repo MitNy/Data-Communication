@@ -49,7 +49,6 @@ while True:
 		data, addr = receiver_sock.recvfrom(1060)
 		checksum = data[15:35]
 		sequence_number = data[35:36]
-		#file_data = data[36:1060]
 			
 		if not data:
 			break
