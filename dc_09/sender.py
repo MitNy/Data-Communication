@@ -51,12 +51,12 @@ while True:
 		
 		buf = [0]*4
 		tmp = []
-		i = 0
-		s = 0
 		window_size = 4
 		received_ack = 0
 		data = f.read(1024)     
 		while data:
+			i = 0
+			s = 0
 			while s < window_size:
 				data_size += len(data)
 		

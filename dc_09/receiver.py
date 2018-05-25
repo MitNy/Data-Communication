@@ -40,7 +40,6 @@ while True:
 	received_seqAck = data[35:36]
 	decode_seqAck = struct.unpack("!B",received_seqAck)
 	seqAck = decode_seqAck[0]
-	
 	info_checksum = sha1generator(received_seqAck,data[36:1060])
 	
 	if checksum == info_checksum:
