@@ -66,7 +66,6 @@ while True:
 				mem[i] = data
 				tmp.extend([i])
 
-				print(tmp)
 				encode_seqAck = seqNumAck(sequence_number,ACK)
 				checksum = sha1generator(encode_seqAck,data)
 
@@ -76,9 +75,9 @@ while True:
 				i = (i+1)%len(mem)
 				sequence_number = (ACK+1)%len(mem)
 				ACK = (ACK+1)%len(mem)
-				s += 1
 
 				data = f.read(1024)
+				s += 1
 	
 			try:
 				sender_sock.settimeout(1)
@@ -86,7 +85,7 @@ while True:
 				received_ack = received_encode_seqAck[0] & 0b1111
 				tmp_index = tmp.index(received_ack)
 
-				for j in range(tmp_index+1):
+				for j in range(tmp_index):
 					tmp.pop(0)
 					s -= 1
 				continue
