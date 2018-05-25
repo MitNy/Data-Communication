@@ -51,7 +51,7 @@ while True:
 
 		ACK = 0
 		sequence_number = 0
-		mem = [None]*8
+		mem = [0]*8
 		tmp = []
 		i = 0
 		s = 0
