@@ -48,9 +48,7 @@ while True:
              
 		encode_seqAck = sender_sock.recv(1)
 		seqAck = encode_seqAck[0]
-
-		ACK = 0
-		sequence_number = 0
+		
 		mem = [0]*8
 		tmp = []
 		i = 0
