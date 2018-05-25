@@ -64,8 +64,9 @@ while True:
 					break
 
 				mem[i] = data
-				tmp.append(i)
+				tmp.extend([i])
 
+				print(tmp)
 				encode_seqAck = seqNumAck(sequence_number,ACK)
 				checksum = sha1generator(encode_seqAck,data)
 
