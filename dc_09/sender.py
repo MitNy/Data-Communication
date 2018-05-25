@@ -86,7 +86,7 @@ while True:
 				tmp_index = tmp.index(received_ack)
 
 				for j in range(tmp_index):
-					tmp.pop(0)
+					del tmp[0]
 					s -= 1
 				continue
 
