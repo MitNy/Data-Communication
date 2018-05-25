@@ -5,12 +5,22 @@ import hashlib
 import time
 import struct
 
+# receiver 요구사항
+# sliding window 크기 1
+# checkusm 체크
+
 ip_address = '127.0.0.1'
 port_number = 2345
  
 receiver_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 receiver_sock.bind((ip_address,port_number))
  
+
+def seqNumAck(sequence_number,ACK):
+	ACK = sequence_number & 0b1111
+	sequence_number = sequence_number << 4
+	return (sequence_number|ACK).to_bytes(1,"big")
+
 def sha1generator(seqAck,fileData):
 	h = hashlib.sha1()
 	h.update(seqAck+fileData)
@@ -35,9 +45,7 @@ while True:
 	
 	if checksum == info_checksum:
 		sequence_number = seqAck >> 4
-		ACK = sequence_number & 0b1111
-		sequence_number = sequence_number << 4
-		encode_seqAck = (sequence_number|ACK).to_bytes(1,"big")
+		encode_seqAck = seqNumAck(sequence_number,ACK)
 		receiver_sock.sendto(encode_seqAck,addr)
 	else:
 		print("** Checksum Error **")
@@ -67,9 +75,7 @@ while True:
 		print(data_size,"/",file_size," , ","{0:.2f}".format((data_size/float(file_size))*100),"%")
 
 		sequence_number = decode_seqAck[0] >> 4
-		ACK = sequence_number & 0b1111
-		sequence_number = sequence_number << 4
-		encode_seqAck = (sequence_number|ACK).to_bytes(1,"big")
+		encode_seqAck = seqNumAck(sequence_number,ACK)
 
 		receiver_sock.sendto(encode_seqAck,addr)
 		if data_size == file_size:

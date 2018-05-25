@@ -4,9 +4,18 @@ import os
 import hashlib
 import struct
 import time
+
+# sender 요구사항
+# window size 4
+# ack 수신
  
 receiverIP = '127.0.0.1'
 receiverPort = 2345
+
+def seqNumAck(sequence_number,ACK):
+	sequence_number = sequence_number << 4
+	ACK = ACK & 0b1111
+	return (sequence_number|ACK).to_bytes(1,"big")
  
 def sha1generator(sequence_numberber,fileData):
 	encode_number = sequence_numberber
@@ -32,27 +41,22 @@ while True:
 		data_size = 0
 		print("[+] Sending file...")
          
-		sequence_number = sequence_number << 4
-		ACK = ACK & 0b1111
-		encode_seqAck = (sequence_number|ACK).to_bytes(1,"big")	
+		encode_seqAck = seqNumAck(sequence_number,ACK)
 		info_checksum = sha1generator(encode_seqAck,"".encode().ljust(1024,))
             
 		sender_sock.sendto((padding_name.encode()+padding_size.encode()+info_checksum+encode_seqAck).ljust(1060,),(receiverIP,receiverPort))
              
 		encode_seqAck = sender_sock.recv(1)
 		seqAck = encode_seqAck[0]
-		ACK = seqAck & 0b00001111
 
 		ACK = 0
 		sequence_number = 0
-
 		mem = [None]*8
 		tmp = []
 		i = 0
 		s = 0
-		received_ack = 0
 		window_size = 4
-		
+		received_ack = 0
 		data = f.read(1024)     
 		while data:
 			while s < window_size:
@@ -64,35 +68,28 @@ while True:
 				mem[i] = data
 				tmp.append(i)
 
-				sequence_number = sequence_number << 4
-				ACK = ACK & 0b1111
-				encode_seqAck = (sequence_number|ACK).to_bytes(1,"big")
-
+				encode_seqAck = seqNumAck(sequence_number,ACK)
 				checksum = sha1generator(encode_seqAck,data)
 
 				sender_sock.sendto(padding_name.encode()+padding_size.encode()+checksum+encode_seqAck+data,(receiverIP,receiverPort))
 				print(data_size,"/",file_size," , ","{0:.2f}".format((data_size/float(file_size))*100),"%")
 
-				i = (i+1)%8
-				sequence_number = (ACK+1)%8
-				ACK = sequence_number
-				s = s+1
+				i = (i+1)%len(mem)
+				sequence_number = (ACK+1)%len(mem)
+				ACK = (ACK+1)%len(mem)
+				s += 1
 
 				data = f.read(1024)
-
-			if len(tmp) == 0:
-				break
 	
 			try:
 				sender_sock.settimeout(1)
 				received_encode_seqAck = sender_sock.recv(1)
-				received_seqAck = received_encode_seqAck[0]
-				received_ack = received_seqAck & 0b1111
+				received_ack = received_encode_seqAck[0] & 0b1111
 				tmp_index = tmp.index(received_ack)
 
 				for j in range(tmp_index+1):
 					tmp.pop(0)
-					s = s-1
+					s -= 1
 				continue
 
 			except:
@@ -100,6 +97,8 @@ while True:
 				ACK = 3
 				continue
 
+			if len(tmp) == 0:
+				break
 			if data_size == file_size:
 				break
              
