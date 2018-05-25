@@ -49,7 +49,7 @@ while True:
 		encode_seqAck = sender_sock.recv(1)
 		seqAck = encode_seqAck[0]
 		
-		mem = [0]*8
+		buf = [0]*4
 		tmp = []
 		i = 0
 		s = 0
@@ -63,18 +63,17 @@ while True:
 				if not data:
 					break
 
-				mem[i] = data
+				buf[i] = data
 				tmp.extend([i])
-
 				encode_seqAck = seqNumAck(sequence_number,ACK)
 				checksum = sha1generator(encode_seqAck,data)
 
 				sender_sock.sendto(padding_name.encode()+padding_size.encode()+checksum+encode_seqAck+data,(receiverIP,receiverPort))
 				print(data_size,"/",file_size," , ","{0:.2f}".format((data_size/float(file_size))*100),"%")
 
-				i = (i+1)%len(mem)
-				sequence_number = (ACK+1)%len(mem)
-				ACK = (ACK+1)%len(mem)
+				i = (i+1)%len(buf)
+				sequence_number = (ACK+1)%len(buf)
+				ACK = (ACK+1)%len(buf)
 
 				data = f.read(1024)
 				s += 1

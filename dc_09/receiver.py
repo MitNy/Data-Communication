@@ -16,10 +16,10 @@ receiver_sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 receiver_sock.bind((ip_address,port_number))
  
 
-def seqNumAck(sequence_number,ACK):
-	ACK = sequence_number & 0b1111
-	sequence_number = sequence_number << 4
-	return (sequence_number|ACK).to_bytes(1,"big")
+def seqNumAck(received_seqAck,ACK):
+	ACK = received_seqAck & 0b1111
+	received_seqAck = received_seqAck << 4
+	return (received_seqAck|ACK).to_bytes(1,"big")
 
 def sha1generator(seqAck,fileData):
 	h = hashlib.sha1()
@@ -30,22 +30,22 @@ while True:
 	print("-----------------------------------")
 	print("Listening ...")
 
-	ACK = 1     
+	ACK = 0  
 	data,addr = receiver_sock.recvfrom(1060)
 	print("[+] Sender connected: ", addr)
 	file_name = data[0:11].decode().rstrip()
 	file_size = os.path.getsize("./"+file_name+"")
 	path = "./receivedFile/new_"+file_name+""
 	checksum = data[15:35]
-	sequence_number = data[35:36]
-	decode_seqAck = struct.unpack("!B",sequence_number)
+	received_seqAck = data[35:36]
+	decode_seqAck = struct.unpack("!B",received_seqAck)
 	seqAck = decode_seqAck[0]
 	
-	info_checksum = sha1generator(sequence_number,data[36:1060])
+	info_checksum = sha1generator(received_seqAck,data[36:1060])
 	
 	if checksum == info_checksum:
-		sequence_number = seqAck >> 4
-		encode_seqAck = seqNumAck(sequence_number,ACK)
+		received_seqAck = seqAck >> 4
+		encode_seqAck = seqNumAck(received_seqAck,ACK)
 		receiver_sock.sendto(encode_seqAck,addr)
 	else:
 		print("** Checksum Error **")
@@ -74,8 +74,8 @@ while True:
 		data_size += len(data[36:1060])
 		print(data_size,"/",file_size," , ","{0:.2f}".format((data_size/float(file_size))*100),"%")
 
-		sequence_number = decode_seqAck[0] >> 4
-		encode_seqAck = seqNumAck(sequence_number,ACK)
+		received_seqAck = decode_seqAck[0] >> 4
+		encode_seqAck = seqNumAck(received_seqAck,ACK)
 
 		receiver_sock.sendto(encode_seqAck,addr)
 		if data_size == file_size:
